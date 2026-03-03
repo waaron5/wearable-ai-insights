@@ -1,0 +1,28 @@
+# Core
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-dotenv==1.0.1
+
+# Database
+sqlalchemy==2.0.36
+psycopg2-binary==2.9.10
+alembic==1.14.1
+
+# Validation / Settings
+pydantic==2.10.4
+pydantic-settings==2.7.1
+
+# Auth
+# (API key verification only — no JWT on backend for MVP)
+
+# AI
+anthropic==0.42.0
+
+# Email
+resend==2.5.0
+
+# Scheduling
+apscheduler==3.10.4
+
+# Templating
+jinja2==3.1.5
