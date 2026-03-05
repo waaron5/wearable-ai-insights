@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ChatLoading() {
   return (
-    <div className="flex h-[calc(100vh-8rem)] gap-0 overflow-hidden rounded-xl border bg-card">
+    <div className="flex h-[calc(100vh-12rem)] md:h-[calc(100vh-8rem)] gap-0 overflow-hidden rounded-xl border bg-card">
       {/* Sidebar skeleton */}
       <aside className="hidden w-64 shrink-0 border-r md:flex md:flex-col">
         <div className="p-3">

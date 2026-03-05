@@ -565,19 +565,19 @@ export default function SettingsClient() {
           <CardTitle className="text-base">Account</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Email</span>
-            <span className="font-medium">{user.email}</span>
+          <div className="flex items-center justify-between gap-4 text-sm">
+            <span className="text-muted-foreground shrink-0">Email</span>
+            <span className="font-medium truncate text-right">{user.email}</span>
           </div>
           <Separator />
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Name</span>
-            <span className="font-medium">{user.name}</span>
+          <div className="flex items-center justify-between gap-4 text-sm">
+            <span className="text-muted-foreground shrink-0">Name</span>
+            <span className="font-medium truncate text-right">{user.name}</span>
           </div>
           <Separator />
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Member since</span>
-            <span className="font-medium">
+          <div className="flex items-center justify-between gap-4 text-sm">
+            <span className="text-muted-foreground shrink-0">Member since</span>
+            <span className="font-medium text-right">
               {new Date(user.created_at).toLocaleDateString("en-US", {
                 month: "long",
                 day: "numeric",

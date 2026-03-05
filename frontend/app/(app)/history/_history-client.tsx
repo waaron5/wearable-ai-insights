@@ -92,12 +92,12 @@ function HistoryCard({ debrief }: { debrief: Debrief }) {
     <Card>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 min-w-0">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
               <FileText className="h-4 w-4 text-primary" />
             </div>
-            <div>
-              <CardTitle className="text-base">{weekRange}</CardTitle>
+            <div className="min-w-0">
+              <CardTitle className="text-sm sm:text-base truncate">{weekRange}</CardTitle>
               <div className="flex items-center gap-2 mt-0.5">
                 <Badge variant={status.variant} className="text-[11px]">
                   {status.text}

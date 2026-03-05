@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 pb-16">
       <div className="absolute top-4 right-4">
         <ThemeToggle />
       </div>
@@ -13,23 +13,23 @@ export default function Home() {
         <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
           <Heart className="h-8 w-8 text-primary" />
         </div>
-        <h1 className="text-4xl font-bold tracking-tight text-foreground">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
           VitalView
         </h1>
-        <p className="text-lg text-muted-foreground leading-relaxed">
+        <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
           Your personal health narrative. Weekly insights from your wearable
           data, powered by AI.
         </p>
-        <div className="flex gap-3 mt-2">
-          <Button asChild size="lg">
+        <div className="flex flex-col sm:flex-row gap-3 mt-2 w-full sm:w-auto">
+          <Button asChild size="lg" className="w-full sm:w-auto">
             <Link href="/login">Sign In</Link>
           </Button>
-          <Button asChild variant="outline" size="lg">
+          <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
             <Link href="/signup">Create Account</Link>
           </Button>
         </div>
       </div>
-      <p className="absolute bottom-6 text-xs text-muted-foreground">
+      <p className="fixed bottom-6 left-4 right-4 text-xs text-muted-foreground text-center">
         VitalView provides wellness insights, not medical advice.
       </p>
     </div>

@@ -90,16 +90,16 @@ function CompositeScores({ summary }: { summary: WeeklySummary }) {
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-3">
+    <div className="grid grid-cols-3 gap-2 sm:gap-3">
       {items.map((item) => (
         <div
           key={item.label}
-          className="rounded-xl border border-border bg-card p-4 text-center"
+          className="rounded-xl border border-border bg-card p-3 sm:p-4 text-center"
         >
-          <p className="text-xs text-muted-foreground font-medium mb-1">
+          <p className="text-[11px] sm:text-xs text-muted-foreground font-medium mb-1">
             {item.label}
           </p>
-          <p className={`text-2xl font-bold ${item.color}`}>
+          <p className={`text-xl sm:text-2xl font-bold ${item.color}`}>
             {item.value != null ? item.value : "—"}
           </p>
           <p className="text-[10px] text-muted-foreground">/ 100</p>
@@ -188,13 +188,13 @@ export default function DashboardClient() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-            <Heart className="h-6 w-6 text-primary" />
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2">
+            <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-primary shrink-0" />
             Dashboard
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Your weekly health insights at a glance.
           </p>
         </div>
@@ -205,7 +205,7 @@ export default function DashboardClient() {
           className="shrink-0"
         >
           <RefreshCw className="mr-2 h-3.5 w-3.5" />
-          Refresh
+          <span className="hidden sm:inline">Refresh</span>
         </Button>
       </div>
 

@@ -401,7 +401,7 @@ export default function ChatClient() {
   // ── Render ──
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] gap-0 overflow-hidden rounded-xl border bg-card">
+    <div className="flex h-[calc(100vh-12rem)] md:h-[calc(100vh-8rem)] gap-0 overflow-hidden rounded-xl border bg-card">
       {/* Desktop sidebar */}
       <aside className="hidden w-64 shrink-0 border-r md:flex md:flex-col">
         {sidebarContent}

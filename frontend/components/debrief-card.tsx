@@ -49,13 +49,13 @@ export function DebriefCard({ debrief }: { debrief: Debrief }) {
     <Card>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 min-w-0">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
               <FileText className="h-4 w-4 text-primary" />
             </div>
-            <div>
-              <CardTitle className="text-lg">Weekly Debrief</CardTitle>
-              <p className="text-sm text-muted-foreground">{weekRange}</p>
+            <div className="min-w-0">
+              <CardTitle className="text-base sm:text-lg">Weekly Debrief</CardTitle>
+              <p className="text-xs sm:text-sm text-muted-foreground truncate">{weekRange}</p>
             </div>
           </div>
           <Badge variant={status.variant}>{status.text}</Badge>

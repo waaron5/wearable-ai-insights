@@ -32,7 +32,7 @@ export function HighlightsStrip({
             <p className="text-xs text-muted-foreground font-medium">
               {h.label}
             </p>
-            <p className="text-xl font-bold tracking-tight">{h.value}</p>
+            <p className="text-lg sm:text-xl font-bold tracking-tight">{h.value}</p>
             <div
               className={cn(
                 "flex items-center gap-1 text-xs font-medium",
