@@ -104,7 +104,6 @@ export default function OnboardingWizard() {
   const [surveyQuestions, setSurveyQuestions] = useState<SurveyQuestion[]>([]);
   const [surveyAnswers, setSurveyAnswers] = useState<Record<string, string>>({});
   const [seedDemo, setSeedDemo] = useState(true);
-  const [loading, setLoading] = useState(false);
   const [finishing, setFinishing] = useState(false);
   const [error, setError] = useState("");
 

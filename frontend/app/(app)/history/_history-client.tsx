@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { api, ApiError, Debrief } from "@/lib/api";
+import { api, Debrief } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,8 +21,6 @@ import {
   FileText,
   Loader2,
   Minus,
-  ThumbsUp,
-  ThumbsDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FeedbackWidget } from "@/components/feedback-widget";

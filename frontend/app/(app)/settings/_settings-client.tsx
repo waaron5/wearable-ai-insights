@@ -7,7 +7,6 @@ import {
   DataSource,
   User,
 } from "@/lib/api";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -29,19 +28,15 @@ import {
 } from "@/components/ui/select";
 import {
   Activity,
-  ArrowDown,
-  ArrowUp,
   CheckCircle2,
   Database,
   Globe,
   Heart,
   Loader2,
   Mail,
-  Minus,
   Shield,
   Watch,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 // ─── Timezones (shared with onboarding) ───────────────────────────
