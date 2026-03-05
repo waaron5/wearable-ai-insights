@@ -161,10 +161,11 @@ export default function OnboardingWizard() {
       }
 
       // 5. Mark as onboarded
-      await api.updateMe({ onboarded_at: new Date().toISOString() });
+      const onboardedAt = new Date().toISOString();
+      await api.updateMe({ onboarded_at: onboardedAt });
 
       // 6. Refresh session to pick up onboarded_at
-      await updateSession();
+      await updateSession({ onboardedAt });
 
       // 7. Redirect to dashboard
       router.push("/dashboard");

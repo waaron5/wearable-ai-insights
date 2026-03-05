@@ -228,10 +228,11 @@ async function apiFetch<T>(
 
   if (!res.ok) {
     let data: unknown;
+    const raw = await res.text();
     try {
-      data = await res.json();
+      data = JSON.parse(raw);
     } catch {
-      data = await res.text();
+      data = raw;
     }
     const message =
       typeof data === "object" && data !== null && "detail" in data

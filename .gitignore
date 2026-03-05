@@ -29,3 +29,6 @@ Thumbs.db
 
 # Docker
 pgdata/
+
+# Local notes
+color-palette.md

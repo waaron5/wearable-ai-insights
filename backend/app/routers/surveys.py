@@ -1,5 +1,6 @@
 """Surveys router — GET questions, POST answers, PATCH consent."""
 
+import logging
 import uuid
 from datetime import datetime, timezone
 
@@ -16,6 +17,8 @@ from app.schemas.surveys import (
     SurveySubmission,
 )
 from app.services.anonymous_data_service import copy_survey_to_anonymous_lake
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/surveys", tags=["surveys"])
 
@@ -77,9 +80,16 @@ def submit_responses(
 
     db.flush()  # populate IDs
 
-    # Copy to anonymous lake if consented
-    response_ids = [r.id for r in created]
-    copy_survey_to_anonymous_lake(db, user_id, response_ids)
+    # Copy to anonymous lake if consented (best-effort — don't block survey save)
+    try:
+        response_ids = [r.id for r in created]
+        copy_survey_to_anonymous_lake(db, user_id, response_ids)
+    except Exception:
+        logger.warning(
+            "Failed to copy survey responses to anonymous lake for user %s — skipping",
+            user_id,
+            exc_info=True,
+        )
 
     db.commit()
     for r in created:

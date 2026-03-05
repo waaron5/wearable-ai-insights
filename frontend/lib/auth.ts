@@ -61,10 +61,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id as string;
         token.onboardedAt = (user as unknown as Record<string, unknown>).onboardedAt as string | null;
+      }
+      // When updateSession() is called from the client with new data, persist it into the token
+      if (trigger === "update" && session?.onboardedAt) {
+        token.onboardedAt = session.onboardedAt as string;
       }
       return token;
     },
