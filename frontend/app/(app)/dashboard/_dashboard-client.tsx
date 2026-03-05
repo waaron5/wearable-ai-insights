@@ -14,6 +14,7 @@ import {
   Loader2,
   BarChart3,
 } from "lucide-react";
+import { toast } from "sonner";
 import {
   api,
   ApiError,
@@ -145,7 +146,7 @@ export default function DashboardClient() {
         setMetrics(metricsResult.value.items);
       }
     } catch {
-      // Silently handle
+      toast.error("Failed to load dashboard data");
     } finally {
       setLoading(false);
     }
@@ -164,7 +165,7 @@ export default function DashboardClient() {
       // Refresh all data after generation
       await fetchData();
     } catch {
-      // Handle error silently
+      toast.error("Failed to generate debrief. Please try again.");
     } finally {
       setTriggering(false);
     }

@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FeedbackWidget } from "@/components/feedback-widget";
+import { toast } from "sonner";
 
 // ─── Helpers ──────────────────────────────────────────────────────
 
@@ -266,7 +267,7 @@ export default function HistoryClient() {
         setDebriefs(res.items);
         setTotal(res.total);
       } catch {
-        // silently fail
+        toast.error("Failed to load debrief history");
       } finally {
         setLoading(false);
       }
@@ -285,7 +286,7 @@ export default function HistoryClient() {
       setDebriefs((prev) => [...prev, ...res.items]);
       setTotal(res.total);
     } catch {
-      // silently fail
+      toast.error("Failed to load more debriefs");
     } finally {
       setLoadingMore(false);
     }

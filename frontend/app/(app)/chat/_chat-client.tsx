@@ -29,6 +29,7 @@ import {
   User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 // ─── Constants ────────────────────────────────────────────────────
 
@@ -228,7 +229,7 @@ export default function ChatClient() {
           setActiveSessionId(res.items[0].id);
         }
       } catch {
-        // silently fail
+        toast.error("Failed to load chat sessions");
       } finally {
         setSessionsLoading(false);
       }
@@ -273,7 +274,7 @@ export default function ChatClient() {
       setEmergencyData(null);
       setSidebarOpen(false);
     } catch {
-      // silently fail
+      toast.error("Failed to create chat session");
     }
   }, []);
 
@@ -362,6 +363,9 @@ export default function ChatClient() {
 
         if (err instanceof ApiError && err.status === 429) {
           setMessagesUsed(DAILY_LIMIT);
+          toast.error("Daily message limit reached");
+        } else {
+          toast.error("Failed to send message");
         }
       } finally {
         setSending(false);
