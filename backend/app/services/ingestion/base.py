@@ -1,8 +1,12 @@
 """Abstract base class for data source adapters.
 
-Each wearable integration implements this interface. All adapters normalize
-incoming data into HealthMetric rows, ensuring downstream services (baselines,
-debriefs, charts) work identically regardless of source.
+DEPRECATED for iOS: HealthKit on the mobile client reads and normalizes data
+from Apple Watch, Whoop, Oura, Garmin (via their Apple Health sync).
+Individual server-side adapters per wearable are no longer needed.
+
+The ManualAdapter is still used by the seed script for demo/test data.
+This base class remains as scaffolding in case server-side ingestion
+is needed in the future (e.g., for a web client or Fitbit API fallback).
 """
 
 import uuid
