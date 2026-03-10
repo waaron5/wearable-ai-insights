@@ -36,6 +36,7 @@ export interface AuthUser {
   onboarded_at: string | null;
   data_sharing_consent: boolean;
   email_notifications_enabled: boolean;
+  push_notifications_enabled: boolean;
   created_at: string;
 }
 

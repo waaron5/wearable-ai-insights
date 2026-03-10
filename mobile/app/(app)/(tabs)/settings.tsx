@@ -114,6 +114,9 @@ export default function SettingsScreen() {
   const [emailNotifications, setEmailNotifications] = useState(
     user?.email_notifications_enabled || false
   );
+  const [pushNotifications, setPushNotifications] = useState(
+    user?.push_notifications_enabled || false
+  );
   const [dataConsent, setDataConsent] = useState(
     user?.data_sharing_consent || false
   );
@@ -150,6 +153,7 @@ export default function SettingsScreen() {
     if (user) {
       setTimezone(user.timezone);
       setEmailNotifications(user.email_notifications_enabled);
+      setPushNotifications(user.push_notifications_enabled);
       setDataConsent(user.data_sharing_consent);
     }
   }, [user]);
@@ -187,6 +191,19 @@ export default function SettingsScreen() {
       await refreshUser();
     } catch {
       setEmailNotifications(!value);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handlePushToggle = async (value: boolean) => {
+    setPushNotifications(value);
+    setSaving(true);
+    try {
+      await api.updateMe({ push_notifications_enabled: value });
+      await refreshUser();
+    } catch {
+      setPushNotifications(!value);
     } finally {
       setSaving(false);
     }
@@ -318,6 +335,14 @@ export default function SettingsScreen() {
               description="Receive weekly debrief summaries via email"
               value={emailNotifications}
               onValueChange={handleNotificationsToggle}
+              disabled={saving}
+            />
+            <Separator />
+            <SwitchRow
+              label="Push notifications"
+              description="Get notified when your weekly debrief is ready"
+              value={pushNotifications}
+              onValueChange={handlePushToggle}
               disabled={saving}
             />
           </CardContent>

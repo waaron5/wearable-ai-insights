@@ -11,6 +11,12 @@ import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { AuthProvider } from "../components/auth-provider";
 import { registerBackgroundSync } from "../services/healthkit-background";
+import { useNotificationListeners } from "../services/push-notifications";
+
+function NotificationSetup() {
+  useNotificationListeners();
+  return null;
+}
 
 export default function RootLayout() {
   useEffect(() => {
@@ -21,6 +27,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AuthProvider>
+        <NotificationSetup />
         <StatusBar style="auto" />
         <Slot />
       </AuthProvider>

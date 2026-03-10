@@ -28,6 +28,7 @@ import {
   AuthUser,
 } from "../services/auth";
 import { clearSyncState } from "../services/healthkit-sync";
+import { registerForPushNotifications } from "../services/push-notifications";
 
 // ---------------------------------------------------------------------------
 // Context types
@@ -73,6 +74,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const currentUser = await fetchCurrentUser();
         setUser(currentUser);
+        // Re-register push token on each app launch for logged-in users
+        if (currentUser?.onboarded_at) {
+          registerForPushNotifications().catch(console.warn);
+        }
       } catch {
         setUser(null);
       } finally {
@@ -110,6 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await authLogin(email, password);
     const currentUser = await fetchCurrentUser();
     setUser(currentUser);
+    registerForPushNotifications().catch(console.warn);
   }, []);
 
   const signup = useCallback(
@@ -117,6 +123,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await authSignup(name, email, password);
       const currentUser = await fetchCurrentUser();
       setUser(currentUser);
+      registerForPushNotifications().catch(console.warn);
     },
     []
   );
@@ -129,6 +136,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await authAppleSignIn(identityToken, fullName);
       const currentUser = await fetchCurrentUser();
       setUser(currentUser);
+      registerForPushNotifications().catch(console.warn);
     },
     []
   );

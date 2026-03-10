@@ -26,6 +26,7 @@ export interface User {
   timezone: string;
   notification_email: string | null;
   email_notifications_enabled: boolean;
+  push_notifications_enabled: boolean;
   onboarded_at: string | null;
   data_sharing_consent: boolean;
   data_sharing_consented_at: string | null;
@@ -36,6 +37,7 @@ export interface UserUpdate {
   timezone?: string;
   notification_email?: string;
   email_notifications_enabled?: boolean;
+  push_notifications_enabled?: boolean;
   onboarded_at?: string;
 }
 
@@ -297,6 +299,12 @@ export const api = {
     apiFetch<User>("users/me", {
       method: "PATCH",
       body: JSON.stringify(data),
+    }),
+
+  updatePushToken: (deviceToken: string) =>
+    apiFetch<User>("users/me/push-token", {
+      method: "PUT",
+      body: JSON.stringify({ device_token: deviceToken }),
     }),
 
   // Metrics

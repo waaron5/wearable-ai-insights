@@ -71,6 +71,10 @@ class User(Base):
     email_notifications_enabled: Mapped[bool] = mapped_column(Boolean, server_default="true")
     onboarded_at: Mapped[datetime | None] = mapped_column(DateTime)
 
+    # Push notifications (APNs)
+    apns_device_token: Mapped[str | None] = mapped_column(String(255))
+    push_notifications_enabled: Mapped[bool] = mapped_column(Boolean, server_default="true")
+
     # Anonymous data sharing consent
     data_sharing_consent: Mapped[bool] = mapped_column(Boolean, server_default="false")
     data_sharing_consented_at: Mapped[datetime | None] = mapped_column(DateTime)

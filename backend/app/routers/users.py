@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app.core.auth import get_current_user_id
 from app.core.database import get_db
 from app.models.models import User
-from app.schemas.users import UserResponse, UserUpdate
+from app.schemas.users import PushTokenUpdate, UserResponse, UserUpdate
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -38,6 +38,23 @@ def update_current_user(
     for field, value in update_data.items():
         setattr(user, field, value)
 
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+@router.put("/me/push-token", response_model=UserResponse)
+def update_push_token(
+    body: PushTokenUpdate,
+    user_id: uuid.UUID = Depends(get_current_user_id),
+    db: Session = Depends(get_db),
+):
+    """Store or update the APNs device token for push notifications."""
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    user.apns_device_token = body.device_token
     db.commit()
     db.refresh(user)
     return user

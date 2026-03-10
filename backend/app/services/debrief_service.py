@@ -169,9 +169,9 @@ async def generate_weekly_debrief(
                 user_id,
             )
 
-        # Steps 10–11: email notification
+        # Steps 10–11: notifications (push + email)
         if send_email:
-            await _send_debrief_email(db, debrief)
+            await _send_debrief_notifications(db, debrief)
 
         db.commit()
         db.refresh(debrief)
@@ -183,6 +183,46 @@ async def generate_weekly_debrief(
         debrief.status = "failed"
         db.commit()
         raise
+
+
+async def _send_debrief_notifications(db: Session, debrief: WeeklyDebrief) -> None:
+    """Send push + email notifications for a generated debrief."""
+    user = db.query(User).filter(User.id == debrief.user_id).one()
+
+    # Push notification (APNs)
+    await _send_debrief_push(user, debrief)
+
+    # Email notification
+    await _send_debrief_email(db, debrief)
+
+
+async def _send_debrief_push(user: User, debrief: WeeklyDebrief) -> None:
+    """Send APNs push notification for the debrief."""
+    try:
+        if not user.push_notifications_enabled:
+            logger.info("Push notifications disabled for user %s — skipping", user.id)
+            return
+
+        if not user.apns_device_token:
+            logger.info("No APNs device token for user %s — skipping push", user.id)
+            return
+
+        from app.core.config import get_settings
+        from app.services.push_service import send_debrief_push
+
+        settings = get_settings()
+        week_start_str = debrief.week_start.strftime("%b %d")
+        week_end_str = debrief.week_end.strftime("%b %d")
+
+        await send_debrief_push(
+            device_token=user.apns_device_token,
+            week_start_str=week_start_str,
+            week_end_str=week_end_str,
+            use_sandbox=settings.APNS_USE_SANDBOX,
+        )
+        logger.info("Push notification sent for debrief %s", debrief.id)
+    except Exception:
+        logger.exception("Failed to send push for debrief %s — non-blocking", debrief.id)
 
 
 async def _send_debrief_email(db: Session, debrief: WeeklyDebrief) -> None:

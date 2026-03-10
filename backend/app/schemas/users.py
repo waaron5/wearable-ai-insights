@@ -13,6 +13,7 @@ class UserResponse(BaseModel):
     timezone: str
     notification_email: str | None
     email_notifications_enabled: bool
+    push_notifications_enabled: bool
     onboarded_at: datetime | None
     data_sharing_consent: bool
     data_sharing_consented_at: datetime | None
@@ -26,4 +27,10 @@ class UserUpdate(BaseModel):
     timezone: str | None = Field(default=None, max_length=64)
     notification_email: str | None = Field(default=None, max_length=320)
     email_notifications_enabled: bool | None = None
+    push_notifications_enabled: bool | None = None
     onboarded_at: datetime | None = None
+
+
+class PushTokenUpdate(BaseModel):
+    """Body for PUT /users/me/push-token."""
+    device_token: str = Field(..., min_length=1, max_length=255)
