@@ -8,8 +8,10 @@
  */
 import Constants from "expo-constants";
 
-// Replace with your Mac's LAN IP address (run: ipconfig getifaddr en0)
-const DEV_API_URL = "http://192.168.1.42:8000";
+// Development API URL. Set via environment variable or defaults to 10.0.2.2 (simulator localhost).
+// For physical device or custom Mac IP, set DEV_API_URL env var.
+// To find your Mac's LAN IP: run `ipconfig getifaddr en0` in Terminal
+const DEV_API_URL = Constants.expoConfig?.extra?.devApiUrl || "http://10.0.2.2:8000";
 const PROD_API_URL = "https://your-api.railway.app";
 
 export const API_URL = __DEV__ ? DEV_API_URL : PROD_API_URL;
