@@ -22,6 +22,7 @@ import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../components/ui/card";
 import { Separator } from "../../components/ui/separator";
+import { ENABLE_APPLE_SIGN_IN } from "../../constants/config";
 
 export default function LoginScreen() {
   const colors = useThemeColors();
@@ -136,13 +137,13 @@ export default function LoginScreen() {
                 style={styles.mt8}
               />
 
-              <View style={styles.dividerRow}>
-                <Separator />
-                <Text style={[styles.dividerText, { color: colors.textMuted }]}>OR</Text>
-                <Separator />
-              </View>
-
-              {Platform.OS === "ios" && (
+              {Platform.OS === "ios" && ENABLE_APPLE_SIGN_IN && (
+                <>
+                  <View style={styles.dividerRow}>
+                    <Separator />
+                    <Text style={[styles.dividerText, { color: colors.textMuted }]}>OR</Text>
+                    <Separator />
+                  </View>
                 <AppleAuthentication.AppleAuthenticationButton
                   buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
                   buttonStyle={
@@ -154,6 +155,7 @@ export default function LoginScreen() {
                   style={styles.appleBtn}
                   onPress={handleApple}
                 />
+                </>
               )}
             </CardContent>
             <CardFooter style={styles.footer}>

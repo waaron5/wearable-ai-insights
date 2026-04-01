@@ -36,8 +36,10 @@ const inferredDevApiUrl =
     : hostUriToApiUrl(Constants.expoConfig?.hostUri) || IOS_SIMULATOR_API_URL;
 const DEV_API_URL = Constants.expoConfig?.extra?.devApiUrl || inferredDevApiUrl;
 const PROD_API_URL = "https://your-api.railway.app";
+const extra = Constants.expoConfig?.extra ?? {};
 
 export const API_URL = __DEV__ ? DEV_API_URL : PROD_API_URL;
+export const ENABLE_APPLE_SIGN_IN = Boolean(extra.enableAppleSignIn);
 
 /**
  * HealthKit metric type mappings.

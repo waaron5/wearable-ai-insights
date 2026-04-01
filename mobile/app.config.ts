@@ -1,6 +1,7 @@
 import { ExpoConfig, ConfigContext } from "expo/config";
 
 const devApiUrl = process.env.DEV_API_URL;
+const fullIosCapabilities = process.env.IOS_FULL_CAPABILITIES === "1";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
@@ -28,14 +29,18 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         "VitalView reads your health data (sleep, heart rate variability, resting heart rate, and steps) to generate personalized weekly health debriefs and track trends over time.",
       NSHealthUpdateUsageDescription:
         "VitalView only reads health data and does not write to your health records.",
-      UIBackgroundModes: ["fetch", "remote-notification"],
+      UIBackgroundModes: fullIosCapabilities ? ["fetch", "remote-notification"] : ["fetch"],
     },
-    // Read-only HealthKit entitlements - we never write data
+    // Local personal-team installs cannot provision Apple Sign-In or APNs.
+    // Re-enable them with IOS_FULL_CAPABILITIES=1 when using a paid Apple team.
     entitlements: {
-      "com.apple.developer.applesignin": ["Default"],
       "com.apple.developer.healthkit": true,
-      "com.apple.developer.healthkit.access": ["read"],
-      "aps-environment": "development",
+      ...(fullIosCapabilities
+        ? {
+            "com.apple.developer.applesignin": ["Default"],
+            "aps-environment": "development",
+          }
+        : {}),
     },
     config: {
       usesNonExemptEncryption: false,
@@ -61,6 +66,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ],
   extra: {
     devApiUrl,
+    enableAppleSignIn: fullIosCapabilities,
     eas: {
       projectId: "your-eas-project-id",
     },

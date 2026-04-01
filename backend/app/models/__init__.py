@@ -1,5 +1,6 @@
 from app.models.models import (
     User,
+    RefreshToken,
     DataSource,
     HealthMetric,
     WeeklyDebrief,
@@ -12,13 +13,11 @@ from app.models.models import (
     AnonymousProfile,
     AnonymousSurveyData,
     AnonymousHealthData,
-    NextAuthAccount,
-    NextAuthSession,
-    NextAuthVerificationToken,
 )
 
 __all__ = [
     "User",
+    "RefreshToken",
     "DataSource",
     "HealthMetric",
     "WeeklyDebrief",
@@ -31,7 +30,4 @@ __all__ = [
     "AnonymousProfile",
     "AnonymousSurveyData",
     "AnonymousHealthData",
-    "NextAuthAccount",
-    "NextAuthSession",
-    "NextAuthVerificationToken",
 ]
