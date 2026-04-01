@@ -1,5 +1,7 @@
-from pydantic_settings import BaseSettings
 from functools import lru_cache
+
+from pydantic import AliasChoices, Field
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -17,7 +19,10 @@ class Settings(BaseSettings):
     RESEND_API_KEY: str = ""
 
     # JWT auth
-    JWT_SECRET_KEY: str = "change-me-in-production"
+    JWT_SECRET_KEY: str = Field(
+        default="change-me-in-production",
+        validation_alias=AliasChoices("JWT_SECRET_KEY", "API_SECRET_KEY"),
+    )
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 30
@@ -38,7 +43,10 @@ class Settings(BaseSettings):
     # Frontend URL (for email links, CORS if ever needed)
     FRONTEND_URL: str = "http://localhost:3000"
 
-    model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
+    model_config = {
+        "env_file": (".env", ".env.local"),
+        "env_file_encoding": "utf-8",
+    }
 
 
 @lru_cache()

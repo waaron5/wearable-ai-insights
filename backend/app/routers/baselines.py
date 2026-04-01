@@ -1,4 +1,4 @@
-"""Baselines router — GET /baselines."""
+"""Baselines router — GET /baselines and POST /baselines/recalculate."""
 
 import uuid
 
@@ -9,6 +9,7 @@ from app.core.auth import get_current_user_id
 from app.core.database import get_db
 from app.models.models import UserBaseline
 from app.schemas.baselines import BaselineResponse
+from app.services.baseline_service import calculate_baselines
 
 router = APIRouter(prefix="/baselines", tags=["baselines"])
 
@@ -26,3 +27,12 @@ def list_baselines(
         .all()
     )
     return baselines
+
+
+@router.post("/recalculate", response_model=list[BaselineResponse])
+def recalculate_user_baselines(
+    user_id: uuid.UUID = Depends(get_current_user_id),
+    db: Session = Depends(get_db),
+):
+    """Recalculate rolling baselines from the user's current metrics."""
+    return calculate_baselines(db, user_id)

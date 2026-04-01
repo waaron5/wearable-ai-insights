@@ -65,7 +65,7 @@ export default function LoginScreen() {
       await appleSignIn(credential.identityToken, {
         givenName: credential.fullName?.givenName ?? undefined,
         familyName: credential.fullName?.familyName ?? undefined,
-      });
+      }, credential.email ?? undefined);
     } catch (err: any) {
       if (err?.code !== "ERR_REQUEST_CANCELED") {
         setError(err?.message || "Apple Sign-In failed.");

@@ -45,6 +45,13 @@ def _extract_summary(narrative: str, max_sentences: int = 3) -> str:
     return " ".join(sentences[:max_sentences])
 
 
+def _has_resend_key(api_key: str) -> bool:
+    normalized = api_key.strip().lower()
+    if not normalized:
+        return False
+    return "placeholder" not in normalized
+
+
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
@@ -93,6 +100,10 @@ async def send_debrief_email(
     )
 
     # Send via Resend
+    if not _has_resend_key(settings.RESEND_API_KEY):
+        logger.info("Resend is not configured — skipping debrief email")
+        return
+
     resend.api_key = settings.RESEND_API_KEY
 
     params: resend.Emails.SendParams = {

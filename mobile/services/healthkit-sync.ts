@@ -117,6 +117,64 @@ async function fetchExistingSourceId(token: string): Promise<string | null> {
   }
 }
 
+async function markSourceSynced(sourceId: string): Promise<void> {
+  const token = await getAuthToken();
+  if (!token) return;
+
+  const response = await fetch(`${API_URL}/sources/${sourceId}/synced`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to mark source synced (${response.status})`);
+  }
+}
+
+async function recalculateBaselines(): Promise<void> {
+  const token = await getAuthToken();
+  if (!token) return;
+
+  const response = await fetch(`${API_URL}/baselines/recalculate`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to recalculate baselines (${response.status})`);
+  }
+}
+
+async function finalizeSuccessfulSync(
+  sourceId: string,
+  options?: { markInitialSync?: boolean }
+): Promise<string | undefined> {
+  await AsyncStorage.setItem(
+    STORAGE_KEYS.LAST_SYNC_DATE,
+    new Date().toISOString()
+  );
+
+  if (options?.markInitialSync) {
+    await AsyncStorage.setItem(STORAGE_KEYS.HAS_INITIAL_SYNC, "true");
+  }
+
+  const tasks = await Promise.allSettled([
+    markSourceSynced(sourceId),
+    recalculateBaselines(),
+  ]);
+
+  if (tasks.some((task) => task.status === "rejected")) {
+    console.warn("[HealthKit Sync] Post-sync maintenance did not fully complete");
+    return "Metrics synced, but post-sync refresh is incomplete";
+  }
+
+  return undefined;
+}
+
 /**
  * Push normalized metrics to the backend via POST /metrics.
  * The backend handles deduplication via ON CONFLICT DO UPDATE.
@@ -193,21 +251,23 @@ export async function syncInitial(
     const metrics = await readAllMetrics(startDate);
 
     if (metrics.length === 0) {
-      return { success: true, metricsCount: 0 };
+      const warning = await finalizeSuccessfulSync(sourceId, {
+        markInitialSync: true,
+      });
+      return { success: true, metricsCount: 0, error: warning };
     }
 
     onProgress?.(`Syncing ${metrics.length} data points...`);
     const pushed = await pushMetrics(metrics, sourceId);
 
-    if (pushed) {
-      await AsyncStorage.setItem(STORAGE_KEYS.LAST_SYNC_DATE, new Date().toISOString());
-      await AsyncStorage.setItem(STORAGE_KEYS.HAS_INITIAL_SYNC, "true");
-    }
+    const warning = pushed
+      ? await finalizeSuccessfulSync(sourceId, { markInitialSync: true })
+      : undefined;
 
     return {
       success: pushed,
       metricsCount: metrics.length,
-      error: pushed ? undefined : "Failed to push metrics to server",
+      error: pushed ? warning : "Failed to push metrics to server",
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
@@ -234,19 +294,18 @@ export async function syncRegular(): Promise<SyncResult> {
     const metrics = await readAllMetrics(startDate);
 
     if (metrics.length === 0) {
-      return { success: true, metricsCount: 0 };
+      const warning = await finalizeSuccessfulSync(sourceId);
+      return { success: true, metricsCount: 0, error: warning };
     }
 
     const pushed = await pushMetrics(metrics, sourceId);
 
-    if (pushed) {
-      await AsyncStorage.setItem(STORAGE_KEYS.LAST_SYNC_DATE, new Date().toISOString());
-    }
+    const warning = pushed ? await finalizeSuccessfulSync(sourceId) : undefined;
 
     return {
       success: pushed,
       metricsCount: metrics.length,
-      error: pushed ? undefined : "Failed to push metrics",
+      error: pushed ? warning : "Failed to push metrics",
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";

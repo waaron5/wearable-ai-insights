@@ -46,7 +46,8 @@ interface AuthContextValue {
   /** Sign in with Apple */
   appleSignIn: (
     identityToken: string,
-    fullName?: { givenName?: string; familyName?: string }
+    fullName?: { givenName?: string; familyName?: string },
+    email?: string
   ) => Promise<void>;
   /** Clear tokens and reset state */
   logout: () => Promise<void>;
@@ -135,9 +136,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const appleSignIn = useCallback(
     async (
       identityToken: string,
-      fullName?: { givenName?: string; familyName?: string }
+      fullName?: { givenName?: string; familyName?: string },
+      email?: string
     ) => {
-      await authAppleSignIn(identityToken, fullName);
+      await authAppleSignIn(identityToken, fullName, email);
       const currentUser = await fetchCurrentUser();
       setUser(currentUser);
       maybeRegisterPushNotifications();

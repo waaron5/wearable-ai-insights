@@ -97,9 +97,12 @@ export function initHealthKit(): Promise<boolean> {
 // Date helpers
 // ---------------------------------------------------------------------------
 
-function toISODate(dateString: string): string {
-  const d = new Date(dateString);
-  return d.toISOString().split("T")[0];
+function toLocalISODate(dateValue: string | Date): string {
+  const d = new Date(dateValue);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 function daysAgo(days: number): Date {
@@ -142,10 +145,10 @@ export function readSleep(
 
       for (const sample of results) {
         // Only count actual sleep (not "in bed")
-        if (sample.value === "ASLEEP" || sample.value === "INBED") {
+        if (sample.value === "ASLEEP") {
           const start = new Date(sample.startDate);
           const end = new Date(sample.endDate);
-          const dateKey = toISODate(sample.startDate);
+          const dateKey = toLocalISODate(sample.startDate);
           const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
 
           byDate.set(dateKey, (byDate.get(dateKey) ?? 0) + hours);
@@ -194,7 +197,7 @@ export function readHRV(
         const byDate = new Map<string, number[]>();
 
         for (const sample of results) {
-          const dateKey = toISODate(sample.startDate);
+          const dateKey = toLocalISODate(sample.startDate);
           const existing = byDate.get(dateKey) ?? [];
           existing.push(sample.value);
           byDate.set(dateKey, existing);
@@ -244,7 +247,7 @@ export function readRestingHeartRate(
         const byDate = new Map<string, number>();
 
         for (const sample of results) {
-          const dateKey = toISODate(sample.startDate);
+          const dateKey = toLocalISODate(sample.startDate);
           const current = byDate.get(dateKey);
           if (current === undefined || sample.value < current) {
             byDate.set(dateKey, sample.value);
@@ -293,7 +296,7 @@ export function readSteps(
         const metrics: NormalizedMetric[] = [];
         for (const sample of results) {
           metrics.push({
-            date: toISODate(sample.startDate),
+            date: toLocalISODate(sample.startDate),
             metric_type: "steps",
             value: Math.round(sample.value),
           });

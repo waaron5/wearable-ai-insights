@@ -9,14 +9,32 @@
 import Constants from "expo-constants";
 import { Platform } from "react-native";
 
+const IOS_SIMULATOR_API_URL = "http://127.0.0.1:8000";
+const ANDROID_EMULATOR_API_URL = "http://10.0.2.2:8000";
+
+function hostUriToApiUrl(hostUri?: string | null): string | null {
+  if (!hostUri) return null;
+
+  const [host] = hostUri.split(":");
+  if (!host) return null;
+
+  if (host === "localhost" || host === "127.0.0.1") {
+    return IOS_SIMULATOR_API_URL;
+  }
+
+  return `http://${host}:8000`;
+}
+
 // Development API URL:
-// - iOS simulator: localhost points to your Mac (where backend usually runs)
-// - Android emulator: 10.0.2.2 maps to host localhost
-// - Physical device: set `extra.devApiUrl` to your Mac's LAN IP (e.g. http://192.168.1.20:8000)
-const DEFAULT_DEV_API_URL =
-  Platform.OS === "ios" ? "http://127.0.0.1:8000" : "http://10.0.2.2:8000";
-const DEV_API_URL =
-  Constants.expoConfig?.extra?.devApiUrl || DEFAULT_DEV_API_URL;
+// - Explicit DEV_API_URL from app config wins
+// - Expo dev sessions can infer the Mac's LAN IP from hostUri
+// - iOS simulator falls back to localhost
+// - Android emulator falls back to 10.0.2.2
+const inferredDevApiUrl =
+  Platform.OS === "android"
+    ? ANDROID_EMULATOR_API_URL
+    : hostUriToApiUrl(Constants.expoConfig?.hostUri) || IOS_SIMULATOR_API_URL;
+const DEV_API_URL = Constants.expoConfig?.extra?.devApiUrl || inferredDevApiUrl;
 const PROD_API_URL = "https://your-api.railway.app";
 
 export const API_URL = __DEV__ ? DEV_API_URL : PROD_API_URL;

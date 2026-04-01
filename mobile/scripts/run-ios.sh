@@ -129,13 +129,21 @@ ensure_metro_running() {
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --simulator|--device)
+    --simulator)
       if [[ $# -lt 2 ]]; then
         usage
         exit 1
       fi
       SIMULATOR_NAME="$2"
       shift 2
+      ;;
+    --device)
+      echo ""
+      echo "Physical iPhone installs are handled through Xcode."
+      echo "Start Metro with: npm run ios:device:metro"
+      echo "Then open ios/VitalView.xcworkspace in Xcode and Run on your connected iPhone."
+      echo ""
+      exit 1
       ;;
     --configuration)
       if [[ $# -lt 2 ]]; then

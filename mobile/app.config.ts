@@ -32,6 +32,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     // Read-only HealthKit entitlements - we never write data
     entitlements: {
+      "com.apple.developer.applesignin": ["Default"],
+      "com.apple.developer.healthkit": true,
       "com.apple.developer.healthkit.access": ["read"],
       "aps-environment": "development",
     },

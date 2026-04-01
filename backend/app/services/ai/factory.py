@@ -33,7 +33,30 @@ logger = logging.getLogger(__name__)
 
 _REGISTRY: dict[str, str] = {
     "vertexai": "app.services.ai.gemini_service.GeminiHealthAIService",
+    "local": "app.services.ai.local_service.LocalHealthAIService",
 }
+
+
+def _looks_unconfigured(value: str) -> bool:
+    normalized = value.strip().lower()
+    if not normalized:
+        return True
+    return any(
+        marker in normalized
+        for marker in ("placeholder", "your-", "path/to", "change-me")
+    )
+
+
+def _provider_is_configured(provider: str) -> bool:
+    settings = get_settings()
+
+    if provider == "vertexai":
+        return not (
+            _looks_unconfigured(settings.GCP_PROJECT_ID)
+            or _looks_unconfigured(settings.GOOGLE_APPLICATION_CREDENTIALS)
+        )
+
+    return True
 
 
 def _import_class(dotted_path: str) -> type[HealthAIService]:
@@ -66,11 +89,20 @@ def get_ai_service() -> HealthAIService:
 
     dotted_path = _REGISTRY.get(provider)
     if dotted_path is None:
-        available = ", ".join(sorted(_REGISTRY.keys()))
-        raise ValueError(
-            f"Unknown AI_PROVIDER '{provider}'. "
-            f"Available providers: {available}"
+        logger.warning(
+            "Unknown AI provider '%s' configured; falling back to local mode",
+            provider,
         )
+        provider = "local"
+        dotted_path = _REGISTRY[provider]
+
+    if not _provider_is_configured(provider):
+        logger.warning(
+            "AI provider '%s' is not configured; falling back to local mode",
+            provider,
+        )
+        provider = "local"
+        dotted_path = _REGISTRY[provider]
 
     cls = _import_class(dotted_path)
     instance = cls()

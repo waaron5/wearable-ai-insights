@@ -25,7 +25,7 @@ export interface AuthTokens {
   access_token: string;
   refresh_token: string;
   token_type: string;
-  user_id: string;
+  user?: AuthUser;
 }
 
 export interface AuthUser {
@@ -109,7 +109,8 @@ export async function signup(
 
 export async function appleSignIn(
   identityToken: string,
-  fullName?: { givenName?: string; familyName?: string }
+  fullName?: { givenName?: string; familyName?: string },
+  email?: string
 ): Promise<AuthTokens> {
   const nameParts = [fullName?.givenName, fullName?.familyName]
     .filter(Boolean)
@@ -120,7 +121,8 @@ export async function appleSignIn(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       identity_token: identityToken,
-      name: nameParts || undefined,
+      full_name: nameParts || undefined,
+      email,
     }),
   });
 

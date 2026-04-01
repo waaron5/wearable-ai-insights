@@ -30,6 +30,7 @@ from app.models.models import (
     WeeklyDebrief,
 )
 from app.services.ai.factory import get_ai_service
+from app.services.ai.local_service import LocalHealthAIService
 from app.services.debrief_service import current_week_bounds
 from app.services.metrics_engine import compute_weekly_summary
 from app.services.pii_scrubber import scrub_chat_context
@@ -288,14 +289,27 @@ async def send_message(
 
     # Step 5: AI call
     ai = get_ai_service()
-    ai_result = await ai.chat_response(
-        system_prompt=full_system,
-        messages=history,
-        user_message=user_content,
-    )
+    if isinstance(ai, LocalHealthAIService):
+        answer = ai.build_chat_answer_from_context(clean_context, user_content)
+    else:
+        try:
+            ai_result = await ai.chat_response(
+                system_prompt=full_system,
+                messages=history,
+                user_message=user_content,
+            )
+            answer = ai_result.answer
+        except Exception:
+            logger.exception(
+                "Cloud chat response failed for user %s; using local fallback",
+                user_id,
+            )
+            answer = LocalHealthAIService.build_chat_answer_from_context(
+                clean_context, user_content
+            )
 
     # Step 6: Post-filter
-    filtered_answer = post_filter(ai_result.answer)
+    filtered_answer = post_filter(answer)
 
     # Step 7: Store messages
     user_msg = ChatMessage(

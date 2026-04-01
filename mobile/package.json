@@ -8,6 +8,8 @@
     "ios": "bash ./scripts/run-ios.sh",
     "ios:clean": "bash ./scripts/clean-ios.sh",
     "ios:demo": "bash ./scripts/run-ios.sh --configuration Release",
+    "ios:metro": "bash ./scripts/start-ios-metro.sh --host localhost",
+    "ios:device:metro": "bash ./scripts/start-ios-metro.sh --host lan",
     "web": "expo start --web"
   },
   "dependencies": {

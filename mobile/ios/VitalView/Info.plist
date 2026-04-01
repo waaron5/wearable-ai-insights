@@ -61,6 +61,10 @@
 	</array>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Allow $(PRODUCT_NAME) to access your Face ID biometric data.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>VitalView reads your health data such as sleep, heart rate variability, resting heart rate, and steps to generate personalized health summaries and trend views.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>VitalView does not write to your Health data. This permission is included because iOS expects both HealthKit usage descriptions to be present.</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Expo Dev Launcher uses the local network to discover and connect to development servers running on your computer.</string>
 	<key>NSUserActivityTypes</key>

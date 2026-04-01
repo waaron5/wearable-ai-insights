@@ -25,6 +25,7 @@ from sqlalchemy.orm import Session
 
 from app.models.models import User, WeeklyDebrief
 from app.services.ai.factory import get_ai_service
+from app.services.ai.local_service import LocalHealthAIService
 from app.services.anonymous_data_service import snapshot_weekly_health_data
 from app.services.metrics_engine import compute_weekly_summary
 from app.services.pii_scrubber import scrub_for_ai
@@ -146,7 +147,19 @@ async def generate_weekly_debrief(
 
         # Step 7: AI call
         ai = get_ai_service()
-        ai_result = await ai.generate_debrief(clean_summary)
+        if isinstance(ai, LocalHealthAIService):
+            ai_result = await ai.generate_debrief(clean_summary)
+        else:
+            try:
+                ai_result = await ai.generate_debrief(clean_summary)
+            except Exception:
+                logger.exception(
+                    "Cloud debrief generation failed for user %s; using local fallback",
+                    user_id,
+                )
+                ai_result = await LocalHealthAIService().generate_debrief(
+                    clean_summary
+                )
 
         # Step 8: post-filter (strip diagnoses, medication refs)
         filtered_narrative = post_filter(ai_result.narrative)
