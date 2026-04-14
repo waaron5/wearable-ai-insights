@@ -8,8 +8,31 @@
  * - Auto-refreshes expired tokens (401 → refresh → retry)
  */
 
-import { API_URL } from "../constants/config";
+import { API_URL, DEV_DEMO_MODE } from "../constants/config";
 import { getAccessToken, refreshAccessToken } from "./auth";
+import {
+  completeDemoOnboarding,
+  createDemoChatSession,
+  createDemoSource,
+  getDemoBaselines,
+  getDemoChatMessages,
+  getDemoChatSessions,
+  getDemoCurrentDebrief,
+  getDemoDebriefs,
+  getDemoMetrics,
+  getDemoSources,
+  getDemoSurveyQuestions,
+  getDemoSurveyResponses,
+  getDemoUser,
+  getDemoWeeklySummary,
+  seedDemoData,
+  sendDemoMessage,
+  submitDemoFeedback,
+  submitDemoSurveyResponses,
+  triggerDemoDebrief,
+  updateDemoConsent,
+  updateDemoUser,
+} from "./demo-mode";
 
 // ─── Response Types ───────────────────────────────────────────────
 
@@ -291,7 +314,7 @@ async function apiFetch<T>(
 
 // ─── API Methods ──────────────────────────────────────────────────
 
-export const api = {
+const realApi = {
   // Users
   getMe: () => apiFetch<User>("users/me"),
 
@@ -478,3 +501,61 @@ export const api = {
       body: JSON.stringify(data),
     }),
 };
+
+const demoApi: typeof realApi = {
+  getMe: async () => getDemoUser(),
+
+  updateMe: async (data) => updateDemoUser(data),
+
+  updatePushToken: async () => getDemoUser(),
+
+  getMetrics: async (params) => getDemoMetrics(params),
+
+  createMetrics: async (metrics) =>
+    metrics.map((metric, index) => ({
+      id: `demo-metric-${index}`,
+      user_id: getDemoUser().id,
+      source_id: null,
+      created_at: new Date().toISOString(),
+      ...metric,
+    })),
+
+  getBaselines: async () => getDemoBaselines(),
+
+  getSources: async () => getDemoSources(),
+
+  createSource: async (data) => createDemoSource(data),
+
+  getDebriefs: async (params) => getDemoDebriefs(params),
+
+  getCurrentDebrief: async () => getDemoCurrentDebrief(),
+
+  getWeeklySummary: async () => getDemoWeeklySummary(),
+
+  triggerDebrief: async () => triggerDemoDebrief(),
+
+  submitFeedback: async (debriefId, data) => submitDemoFeedback(debriefId, data),
+
+  getChatSessions: async (params) => getDemoChatSessions(params),
+
+  createChatSession: async (data) => createDemoChatSession(data),
+
+  getChatMessages: async (sessionId, params) =>
+    getDemoChatMessages(sessionId, params),
+
+  sendMessage: async (sessionId, content) => sendDemoMessage(sessionId, content),
+
+  seedDemo: async () => seedDemoData(),
+
+  completeOnboarding: async () => completeDemoOnboarding(),
+
+  getSurveyQuestions: async () => getDemoSurveyQuestions(),
+
+  submitSurveyResponses: async (data) => submitDemoSurveyResponses(data),
+
+  getSurveyResponses: async () => getDemoSurveyResponses(),
+
+  updateConsent: async (data) => updateDemoConsent(data.data_sharing_consent),
+};
+
+export const api = DEV_DEMO_MODE ? demoApi : realApi;

@@ -224,7 +224,7 @@ export default function SignupScreen() {
                 Already have an account?{" "}
               </Text>
               <Link href="/(auth)/login" asChild>
-                <Text style={[styles.link, { color: colors.primary }]}>
+                <Text style={StyleSheet.flatten([styles.link, { color: colors.primary }])}>
                   Sign In
                 </Text>
               </Link>

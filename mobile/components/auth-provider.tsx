@@ -27,6 +27,8 @@ import {
   fetchCurrentUser,
   AuthUser,
 } from "../services/auth";
+import { DEV_DEMO_MODE } from "../constants/config";
+import { getDemoAuthUser } from "../services/demo-mode";
 import { clearSyncState } from "../services/healthkit-sync";
 import { registerForPushNotifications } from "../services/push-notifications";
 
@@ -76,6 +78,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // ---------------------------------------------------------------------------
   useEffect(() => {
     (async () => {
+      if (DEV_DEMO_MODE) {
+        setUser(getDemoAuthUser());
+        setLoading(false);
+        return;
+      }
+
       try {
         const currentUser = await fetchCurrentUser();
         setUser(currentUser);
@@ -117,6 +125,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // ---------------------------------------------------------------------------
 
   const login = useCallback(async (email: string, password: string) => {
+    if (DEV_DEMO_MODE) {
+      setUser(getDemoAuthUser());
+      return;
+    }
+
     await authLogin(email, password);
     const currentUser = await fetchCurrentUser();
     setUser(currentUser);
@@ -125,6 +138,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signup = useCallback(
     async (name: string, email: string, password: string) => {
+      if (DEV_DEMO_MODE) {
+        setUser(getDemoAuthUser());
+        return;
+      }
+
       await authSignup(name, email, password);
       const currentUser = await fetchCurrentUser();
       setUser(currentUser);
@@ -139,6 +157,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       fullName?: { givenName?: string; familyName?: string },
       email?: string
     ) => {
+      if (DEV_DEMO_MODE) {
+        setUser(getDemoAuthUser());
+        return;
+      }
+
       await authAppleSignIn(identityToken, fullName, email);
       const currentUser = await fetchCurrentUser();
       setUser(currentUser);
@@ -148,12 +171,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = useCallback(async () => {
+    if (DEV_DEMO_MODE) {
+      setUser(null);
+      return;
+    }
+
     await authLogout();
     await clearSyncState();
     setUser(null);
   }, []);
 
   const refreshUser = useCallback(async () => {
+    if (DEV_DEMO_MODE) {
+      setUser(getDemoAuthUser());
+      return;
+    }
+
     const currentUser = await fetchCurrentUser();
     setUser(currentUser);
   }, []);

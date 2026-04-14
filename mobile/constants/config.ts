@@ -35,10 +35,11 @@ const inferredDevApiUrl =
     ? ANDROID_EMULATOR_API_URL
     : hostUriToApiUrl(Constants.expoConfig?.hostUri) || IOS_SIMULATOR_API_URL;
 const DEV_API_URL = Constants.expoConfig?.extra?.devApiUrl || inferredDevApiUrl;
-const PROD_API_URL = "https://your-api.railway.app";
 const extra = Constants.expoConfig?.extra ?? {};
+const PROD_API_URL = "https://your-api.railway.app";
 
 export const API_URL = __DEV__ ? DEV_API_URL : PROD_API_URL;
+export const DEV_DEMO_MODE = __DEV__ && extra.devDemoMode !== false;
 export const ENABLE_APPLE_SIGN_IN = Boolean(extra.enableAppleSignIn);
 
 /**

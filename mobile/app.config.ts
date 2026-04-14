@@ -2,6 +2,7 @@ import { ExpoConfig, ConfigContext } from "expo/config";
 
 const devApiUrl = process.env.DEV_API_URL;
 const fullIosCapabilities = process.env.IOS_FULL_CAPABILITIES === "1";
+const devDemoMode = process.env.DEV_DEMO_MODE !== "0";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
@@ -66,6 +67,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ],
   extra: {
     devApiUrl,
+    devDemoMode,
     enableAppleSignIn: fullIosCapabilities,
     eas: {
       projectId: "your-eas-project-id",

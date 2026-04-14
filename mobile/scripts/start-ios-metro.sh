@@ -11,19 +11,49 @@ usage() {
 }
 
 detect_lan_ip() {
-  local ip
+  local iface ip default_iface
 
-  ip="$(ipconfig getifaddr en0 2>/dev/null || true)"
-  if [[ -n "$ip" ]]; then
-    echo "$ip"
-    return
+  ip_for_interface() {
+    local target_iface="$1"
+    local detected_ip=""
+
+    detected_ip="$(ipconfig getifaddr "$target_iface" 2>/dev/null || true)"
+    if [[ -z "$detected_ip" ]]; then
+      detected_ip="$(ifconfig "$target_iface" 2>/dev/null | awk '/inet / { print $2; exit }' || true)"
+    fi
+
+    if [[ -n "$detected_ip" && "$detected_ip" != 127.* && "$detected_ip" != 169.254.* ]]; then
+      echo "$detected_ip"
+      return 0
+    fi
+
+    return 1
+  }
+
+  default_iface="$(route -n get default 2>/dev/null | awk '/interface: / { print $2; exit }' || true)"
+  if [[ -n "$default_iface" ]]; then
+    ip="$(ip_for_interface "$default_iface" || true)"
+    if [[ -n "$ip" ]]; then
+      echo "$ip"
+      return 0
+    fi
   fi
 
-  ip="$(ipconfig getifaddr en1 2>/dev/null || true)"
-  if [[ -n "$ip" ]]; then
-    echo "$ip"
-    return
-  fi
+  for iface in en0 en1; do
+    ip="$(ip_for_interface "$iface" || true)"
+    if [[ -n "$ip" ]]; then
+      echo "$ip"
+      return 0
+    fi
+  done
+
+  while read -r iface; do
+    ip="$(ip_for_interface "$iface" || true)"
+    if [[ -n "$ip" ]]; then
+      echo "$ip"
+      return 0
+    fi
+  done < <(ifconfig -l | tr ' ' '\n')
 
   return 1
 }
